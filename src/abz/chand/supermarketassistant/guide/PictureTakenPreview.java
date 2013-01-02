@@ -1,14 +1,11 @@
 package abz.chand.supermarketassistant.guide;
 
 import org.opencv.android.Utils;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import abz.chand.supermarketassistant.R;
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -25,21 +22,18 @@ public class PictureTakenPreview extends Activity {
 		setContentView(R.layout.picturetakenpreview);
 
 		byte[] data = CameraFrameData.data;
-				
-		long time = System.currentTimeMillis();	
-		int width = 1920;
-		int height = 1080;
 		
-		Mat my = new Mat(height + height/2, width, CvType.CV_8UC1);
-		my.put(0, 0, data);
-				
-		Mat mat2 = new Mat();
-		Imgproc.cvtColor(my, mat2, Imgproc.COLOR_YUV2RGBA_NV21, 4);
-				
-		System.out.println("Time: " + (System.currentTimeMillis() - time));
+		ProcessFrame processFrame = CameraFrameData.processFrame;
+		
+		int width = processFrame.getWidth();//320;//1280;//1920;
+		int height = processFrame.getHeight();//240;//720;//1080;		
+		
+		long time = System.currentTimeMillis();
+		Mat mat = processFrame.getStickerData(data);
+		System.out.println("TimeLeft: " + (System.currentTimeMillis() - time));		
 		
 		Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-		Utils.matToBitmap(mat2, bmp);
+		Utils.matToBitmap(mat, bmp);
 
 		data = null;
 		ImageView imageView = (ImageView) findViewById(R.id.image);

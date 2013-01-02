@@ -22,7 +22,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	private SurfaceHolder mHolder;
 	private Camera mCamera;
 	private Parameters parameters;
-	private Size previewSize; 
+	private Size previewSize;
+	private ProcessFrame processFrame; 
 
 	public CameraPreview(Context context) {
 		super(context);
@@ -53,16 +54,41 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			mCamera.setPreviewCallback(this);
 
 			parameters = mCamera.getParameters();
-			List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();    
-			previewSize = previewSizes.get(0);
-			System.out.println("W: " + previewSize.width + " , H: " + previewSize.height);
-
+			setPreviewSize(parameters.getSupportedPreviewSizes());
+			processFrame = new ProcessFrame(previewSize.width, previewSize.height);
+			
+			CameraFrameData.processFrame = processFrame;
+			
 		} catch (IOException exception) {
 			mCamera.release();
 			mCamera = null;
 		}
 	}
 
+	private void setPreviewSize(List<Camera.Size> previewSizes){
+//		int resolution = 320 * 240;
+//		int resolution = 1920 * 1080;
+		int resolution = 640 * 480;
+		
+		int closestIndex = -1;
+		int minDiffResolution = Integer.MAX_VALUE;
+		
+		for (int i = 0; i < previewSizes.size(); i++){
+			Camera.Size size = previewSizes.get(i);	
+			
+			int currentResolution = size.width * size.height;
+			int currentDiffResolution = Math.abs(resolution - currentResolution);
+			
+			if (currentDiffResolution < minDiffResolution){
+				minDiffResolution = currentDiffResolution;
+				closestIndex = i;
+			}
+			System.out.println("W: " + size.width + " H: " + size.height);
+		}
+		
+		previewSize = previewSizes.get(closestIndex);	
+	}
+	
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		mCamera.stopPreview();
 		mCamera.release();
@@ -88,16 +114,20 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		return true;
 	}
 
-
+	boolean what = true;
+	
 	@Override
-	public void onPreviewFrame(byte[] data, Camera camera) {
-		CameraFrameData.data = data;
+	public void onPreviewFrame(byte[] data, Camera camera) {	
+		if (what){
+			CameraFrameData.data = data;
+		}
 	}
 
 	AutoFocusCallback myAutoFocusCallback = new AutoFocusCallback(){
 
 		@Override
 		public void onAutoFocus(boolean arg0, Camera arg1) {
+//			what = false;
 			mCamera.takePicture(shutter, rawPic, jpeg);
 			//	mCamera.autoFocus(myAutoFocusCallback);
 		}
