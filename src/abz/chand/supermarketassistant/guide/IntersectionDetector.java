@@ -59,6 +59,10 @@ public class IntersectionDetector {
 			x+=incX;
 			y+=incY;
 			double[] pixelData = mat.get(y, x);
+			if (pixelData == null){
+				isWhite = false;
+				break;
+			}
 			h = (int) pixelData[0];
 			s = (int) pixelData[1];
 			v = (int) pixelData[2];

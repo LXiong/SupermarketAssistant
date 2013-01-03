@@ -51,11 +51,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		try {
 			mCamera.setPreviewDisplay(holder);
 
-			mCamera.setPreviewCallback(this);
 
 			parameters = mCamera.getParameters();
 			setPreviewSize(parameters.getSupportedPreviewSizes());
 			processFrame = new ProcessFrame(previewSize.width, previewSize.height);
+
+			mCamera.setPreviewCallbackWithBuffer(this);
+			mCamera.addCallbackBuffer(new byte[previewSize.width * previewSize.height * 3 / 2 + 1]);
 			
 			CameraFrameData.processFrame = processFrame;
 			
@@ -89,6 +91,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		previewSize = previewSizes.get(closestIndex);	
 	}
 	
+	
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		mCamera.stopPreview();
 		mCamera.release();
@@ -117,10 +120,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	boolean what = true;
 	
 	@Override
-	public void onPreviewFrame(byte[] data, Camera camera) {	
-		if (what){
-			CameraFrameData.data = data;
-		}
+	public void onPreviewFrame(byte[] data, Camera camera) {
+		processFrame.getStickerDataString(data);
+		System.out.println("POPOPOPOP");
+//		if (what){
+//			CameraFrameData.data = data;
+//		}
+		mCamera.addCallbackBuffer(data);
 	}
 
 	AutoFocusCallback myAutoFocusCallback = new AutoFocusCallback(){
@@ -164,4 +170,5 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Intent intent = new Intent(context, PictureTakenPreview.class);
 		context.startActivity(intent);
 	}
+	
 }

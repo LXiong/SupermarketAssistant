@@ -31,7 +31,7 @@ public class MatConverter {
 		Imgproc.cvtColor(matYuv, mat, Imgproc.COLOR_YUV2RGB_NV21);
 		return mat;
 	}
-
+	
 	public Mat convertYuvToRgba(Mat matYuv){
 		Mat mat = new Mat();
 		Imgproc.cvtColor(matYuv, mat, Imgproc.COLOR_YUV2RGBA_NV21);
