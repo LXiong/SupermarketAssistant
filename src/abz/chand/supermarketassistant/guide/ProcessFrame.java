@@ -54,11 +54,14 @@ public class ProcessFrame {
 	}
 	
 	public void getStickerDataString(byte[] data) {
+		long time = System.currentTimeMillis();
+		System.out.println("POPOPOPOP");
 		Mat mat = matConverter.convertDataToMat(data);
 		Mat rgbMat = matConverter.convertYuvToRgb(mat);
 		List<Point> centerPoints = circleDetection.getCirclePoints(rgbMat);
 		Mat hsvMat = matConverter.convertRgbToHsv(rgbMat);
 		String fData = angleCorrection.adjustFrameAngle(centerPoints, hsvMat, rgbMat);
+		System.out.println("TimeLeft: " + (System.currentTimeMillis() - time));
 		frameData[frameDataIndex] = fData;
 		if (checkIfFrameDataConsitent()){
 			System.out.println("DATA: " + frameData[0]);	
