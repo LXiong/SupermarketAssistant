@@ -2,9 +2,11 @@ package abz.chand.supermarketassistant.guide;
 
 import org.opencv.core.Point;
 
+import abz.chand.supermarketassistant.guide.sensors.MovementDetection;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.hardware.SensorManager;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -16,10 +18,13 @@ public class PreviewOverlay extends View {
 	private Point endDrawPoint;
 	private Paint paint;
 	private ProcessFrame processFrame;
+	private MovementDetection movementDetection;
+	private SensorManager sensorManager;
 
-	public PreviewOverlay(Context context, ProcessFrame processFrame) {
+	public PreviewOverlay(Context context, ProcessFrame processFrame, SensorManager sensorManager) {
 		super(context);		
 		this.processFrame = processFrame;
+		this.sensorManager = sensorManager;
 	}
 
 	public PreviewOverlay(Context context, AttributeSet attrs) {
@@ -41,12 +46,14 @@ public class PreviewOverlay extends View {
 		paint.setStrokeCap(Paint.Cap.ROUND);
 		paint.setStrokeJoin(Paint.Join.ROUND);
 		paint.setARGB(255, 0, 255, 0);
+		
+		movementDetection = new MovementDetection(sensorManager);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		setCenterPoint(processFrame.getCenterPoint());
-		setAngle(processFrame.getAngle());
+//		setCenterPoint(processFrame.getCenterPoint());
+//		setAngle(processFrame.getAngle());
 //		setAngle(0);
 		
 		canvas.drawLine((float) startDrawPoint.x, (float) startDrawPoint.y, (float) endDrawPoint.x, (float) endDrawPoint.y, paint);

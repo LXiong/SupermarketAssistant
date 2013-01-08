@@ -128,12 +128,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	
 	@Override
 	public void onPreviewFrame(byte[] data, Camera camera) {
-		processFrame.getStickerDataString(data);
+//		processFrame.getStickerDataString(data);
 //		System.out.println("POPOPOPOP");
 //		if (what){
 //			CameraFrameData.data = data;
 //		}
-		mCamera.addCallbackBuffer(data);
+//		mCamera.addCallbackBuffer(data);
 	}
 
 	AutoFocusCallback myAutoFocusCallback = new AutoFocusCallback(){
