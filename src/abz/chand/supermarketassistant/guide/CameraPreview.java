@@ -30,6 +30,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		init();		
 	}
 
+	public CameraPreview(Context context, ProcessFrame processFrame) {
+		super(context);
+		this.processFrame =  processFrame;
+		init();		
+	}
+	
 	public CameraPreview(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
@@ -51,10 +57,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		try {
 			mCamera.setPreviewDisplay(holder);
 
-
 			parameters = mCamera.getParameters();
 			setPreviewSize(parameters.getSupportedPreviewSizes());
-			processFrame = new ProcessFrame(previewSize.width, previewSize.height);
+//			processFrame = new ProcessFrame(previewSize.width, previewSize.height);
+			processFrame.setUpSize(previewSize.width, previewSize.height);
 
 			mCamera.setPreviewCallbackWithBuffer(this);
 			mCamera.addCallbackBuffer(new byte[previewSize.width * previewSize.height * 3 / 2 + 1]);
@@ -102,6 +108,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		parameters.setPreviewSize(previewSize.width, previewSize.height);
 		mCamera.setParameters(parameters);
 		mCamera.startPreview();
+		System.out.println("WHWHWHHWHWHWHW");
 		//mCamera.autoFocus(myAutoFocusCallback); 
 	}
 
@@ -122,7 +129,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	@Override
 	public void onPreviewFrame(byte[] data, Camera camera) {
 		processFrame.getStickerDataString(data);
-		System.out.println("POPOPOPOP");
+//		System.out.println("POPOPOPOP");
 //		if (what){
 //			CameraFrameData.data = data;
 //		}

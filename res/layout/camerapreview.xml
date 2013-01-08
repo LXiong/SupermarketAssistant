@@ -13,4 +13,12 @@
         android:layout_centerVertical="true" >
     </abz.chand.supermarketassistant.guide.CameraPreview>
 
+    <abz.chand.supermarketassistant.guide.PreviewOverlay
+        android:id="@+id/previewOverlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+    </abz.chand.supermarketassistant.guide.PreviewOverlay>
+
 </RelativeLayout>

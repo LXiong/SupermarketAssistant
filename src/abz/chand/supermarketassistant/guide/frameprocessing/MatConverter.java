@@ -1,4 +1,4 @@
-package abz.chand.supermarketassistant.guide;
+package abz.chand.supermarketassistant.guide.frameprocessing;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;

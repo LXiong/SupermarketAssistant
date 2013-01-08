@@ -1,7 +1,9 @@
-package abz.chand.supermarketassistant.guide;
+package abz.chand.supermarketassistant.guide.frameprocessing;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+
+import abz.chand.supermarketassistant.guide.frameprocessing.colour.ColourRanges;
 
 public class IntersectionDetector {
 

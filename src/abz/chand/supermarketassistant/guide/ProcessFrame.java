@@ -7,17 +7,30 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 
+import abz.chand.supermarketassistant.guide.dataholder.StickerData;
+import abz.chand.supermarketassistant.guide.frameprocessing.AngleCorrection;
+import abz.chand.supermarketassistant.guide.frameprocessing.CircleDetection;
+import abz.chand.supermarketassistant.guide.frameprocessing.MatConverter;
+
 public class ProcessFrame {
 	
-	private static final int MAX_CONSISTENT_FRAMES = 4;
+	private static final int MAX_CONSISTENT_FRAMES = 5;
 	
 	private int width;
 	private int height;
 	private MatConverter matConverter;
 	private CircleDetection circleDetection;
 	private AngleCorrection angleCorrection;
-	private String[] frameData;
+	private StickerData[] frameData;
+	private StickerData latestAccurateStickerData;
 	private int frameDataIndex;
+	
+	public ProcessFrame(){
+		circleDetection = new CircleDetection();
+		angleCorrection = new AngleCorrection();
+		frameData = new StickerData[MAX_CONSISTENT_FRAMES];
+		init();
+	}
 	
 	public ProcessFrame(int width, int height){
 		this.width = width;
@@ -25,15 +38,22 @@ public class ProcessFrame {
 		matConverter = new MatConverter(width, height);
 		circleDetection = new CircleDetection();
 		angleCorrection = new AngleCorrection();
-		frameData = new String[MAX_CONSISTENT_FRAMES];
+		frameData = new StickerData[MAX_CONSISTENT_FRAMES];
 		init();
 	}
 
+	public void setUpSize(int width, int height){
+		this.width = width;
+		this.height = height;	
+		matConverter = new MatConverter(width, height);
+	}
+	
 	private void init() {
 		frameDataIndex = 0;
 		for (int i = 0; i < MAX_CONSISTENT_FRAMES; i++){
-			frameData[i] = "";
+			frameData[i] = new StickerData();
 		}
+		latestAccurateStickerData = new StickerData();
 	}
 
 	public int getHeight() {
@@ -43,6 +63,14 @@ public class ProcessFrame {
 		return width;
 	}
 
+	public int getAngle(){
+		return latestAccurateStickerData.getAngleFromNorth();
+	}
+	
+	public Point getCenterPoint(){
+		return latestAccurateStickerData.getCenterPoint();
+	}
+	
 	public Mat getStickerData(byte[] data) {
 		Mat mat = matConverter.convertDataToMat(data);
 		Mat rgbMat = matConverter.convertYuvToRgb(mat);
@@ -54,19 +82,21 @@ public class ProcessFrame {
 	}
 	
 	public void getStickerDataString(byte[] data) {
-		long time = System.currentTimeMillis();
-		System.out.println("POPOPOPOP");
+//		long time = System.currentTimeMillis();
+//		System.out.println("TimeLeft: " + (System.currentTimeMillis() - time));
+
 		Mat mat = matConverter.convertDataToMat(data);
 		Mat rgbMat = matConverter.convertYuvToRgb(mat);
 		List<Point> centerPoints = circleDetection.getCirclePoints(rgbMat);
 		Mat hsvMat = matConverter.convertRgbToHsv(rgbMat);
-		String fData = angleCorrection.adjustFrameAngle(centerPoints, hsvMat, rgbMat);
-		System.out.println("TimeLeft: " + (System.currentTimeMillis() - time));
-		frameData[frameDataIndex] = fData;
-		if (checkIfFrameDataConsitent()){
-			System.out.println("DATA: " + frameData[0]);	
+		StickerData stickerData = angleCorrection.adjustFrameAngle(centerPoints, hsvMat, rgbMat);
+		if (stickerData != null){
+			frameData[frameDataIndex] = stickerData;
+			frameDataIndex = (frameDataIndex + 1) % MAX_CONSISTENT_FRAMES;
+			if (checkIfFrameDataConsitent()){
+				System.out.println("DATAB: " + latestAccurateStickerData);
+			}
 		}
-		frameDataIndex = (frameDataIndex + 1) % MAX_CONSISTENT_FRAMES;
 	}
 
 	private void drawCircleCenters(Mat mat, List<Point> centerPoints) {
@@ -77,14 +107,15 @@ public class ProcessFrame {
 	}
 	
 	private boolean checkIfFrameDataConsitent(){
-		String data = frameData[0]; 
+		StickerData stickerData = frameData[0]; 
 		
 		for (int i = 1; i < MAX_CONSISTENT_FRAMES; i++){
-			if (!data.equals(frameData[i])){
+			if (stickerData != null && frameData[i] != null && !stickerData.equalDataValues(frameData[i])){
 				return false;
 			}
 		}
 		
+		latestAccurateStickerData = stickerData;
 		return true;
 	}
 

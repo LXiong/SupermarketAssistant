@@ -1,4 +1,4 @@
-package abz.chand.supermarketassistant.guide;
+package abz.chand.supermarketassistant.guide.frameprocessing;
 
 import java.util.ArrayList;
 import java.util.List;

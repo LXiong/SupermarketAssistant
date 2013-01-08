@@ -1,4 +1,4 @@
-package abz.chand.supermarketassistant.guide;
+package abz.chand.supermarketassistant.guide.frameprocessing;
 
 import java.util.List;
 
@@ -9,21 +9,26 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import abz.chand.supermarketassistant.guide.dataholder.StickerData;
+import abz.chand.supermarketassistant.guide.frameprocessing.colour.ColourRanges;
+
 public class AngleCorrection {
 
-	private ColourRanges colourRanges;
-	private IntersectionDetector intersectionDetector;
-	private AngleCalculator angleCalculator;
-	private ProcessFrameData processFrameData;
+	private final ColourRanges colourRanges;
+	private final IntersectionDetector intersectionDetector;
+	private final AngleCalculator angleCalculator;
+	private final ProcessFrameData processFrameData;
+	private final StickerData stickerData;
 
 	public AngleCorrection() {
 		colourRanges = new ColourRanges();
 		intersectionDetector = new IntersectionDetector();
 		angleCalculator = new AngleCalculator();
 		processFrameData = new ProcessFrameData();
+		stickerData = new StickerData();
 	}
 
-	public String adjustFrameAngle(List<Point> centerPoints, Mat mat, Mat rgbMat){	
+	public StickerData adjustFrameAngle(List<Point> centerPoints, Mat mat, Mat rgbMat){	
 		Scalar color2 = new Scalar(0, 0, 255);
 		for (Point centerPoint : centerPoints){
 			if (isDetectedCircleCenterWhite(centerPoint, mat)){
@@ -36,11 +41,15 @@ public class AngleCorrection {
 					Mat mapMat = Imgproc.getRotationMatrix2D(centerPoint, angle, 1);
 					Imgproc.warpAffine(rgbMat, rgbMat, mapMat, new Size(), Imgproc.INTER_LINEAR);
 					Imgproc.warpAffine(mat, mat, mapMat, new Size(), Imgproc.INTER_LINEAR);
-					return processFrameData.getData(mat, centerPoint);	
+					List<Integer> dataValues = processFrameData.getData(mat, centerPoint);
+					stickerData.setAngleFromNorth(angle);
+					stickerData.setCenterPoint(centerPoint);
+					stickerData.setDataValues(dataValues);
+					return stickerData;
 				}
 			}
 		}
-		return "Empty";
+		return null;
 	}
 
 	private boolean isDetectedCircleCenterWhite(Point point, Mat mat){
