@@ -52,6 +52,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
 //        Matrix.setLookAtM(mVMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         Matrix.setLookAtM(mVMatrix, 0, 0, 0, 0, 0f, 0f, -10f, 0f, 1.0f, 0.0f);
+        
+        
 //        Matrix.setLookAtM(rm, rmOffset, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ)
 
         // Calculate the projection and view transformation
@@ -67,7 +69,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer, SensorEventListener
 
         // Combine the rotation matrix with the projection and camera view
         Matrix.multiplyMM(mMVPMatrix, 0, mRotationMatrix, 0, mMVPMatrix, 0);
-
     }
 
     @Override

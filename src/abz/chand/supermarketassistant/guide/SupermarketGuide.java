@@ -18,7 +18,8 @@ import android.view.WindowManager;
 public class SupermarketGuide extends Activity{
 	
 	private GLSurfaceView mGLSurfaceView;
-        
+	private SensorManager sensorManager;    
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -26,7 +27,7 @@ public class SupermarketGuide extends Activity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mGLSurfaceView =  new MyGLSurfaceView(this, sensorManager);
 	}
 
@@ -41,11 +42,11 @@ public class SupermarketGuide extends Activity{
 				CameraPreview cameraPreview = new CameraPreview(getApplicationContext(), processFrame);			
 				setContentView(cameraPreview);				
 				
-				addContentView(mGLSurfaceView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+//				addContentView(mGLSurfaceView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 
 			
-//				PreviewOverlay previewOverlay = new PreviewOverlay(getApplicationContext(), processFrame, sensorManager);
-//				addContentView(previewOverlay, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+				PreviewOverlay previewOverlay = new PreviewOverlay(getApplicationContext(), processFrame, sensorManager);
+				addContentView(previewOverlay, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 //				setContentView(R.layout.camerapreview);
 				
 //				previewOverlay = (PreviewOverlay) findViewById(R.id.previewOverlay);

@@ -3,6 +3,7 @@ package abz.chand.supermarketassistant.guide;
 import org.opencv.core.Point;
 
 import abz.chand.supermarketassistant.guide.sensors.MovementDetection;
+import abz.chand.supermarketassistant.guide.sensors.RotationDetection;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -19,7 +20,8 @@ public class PreviewOverlay extends View {
 	private Paint paint;
 	private ProcessFrame processFrame;
 	private MovementDetection movementDetection;
-	private SensorManager sensorManager;
+	private RotationDetection rotationDetection;
+	private SensorManager sensorManager;	
 
 	public PreviewOverlay(Context context, ProcessFrame processFrame, SensorManager sensorManager) {
 		super(context);		
@@ -38,7 +40,7 @@ public class PreviewOverlay extends View {
 	public void init(){
 		startDrawPoint = new Point(width/2, height/2);
 		endDrawPoint = new Point(width/2, height/2);
-		setAngle(225);
+		setAngle(270);
 		paint = new Paint();
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setStrokeWidth(3);
@@ -48,6 +50,7 @@ public class PreviewOverlay extends View {
 		paint.setARGB(255, 0, 255, 0);
 		
 		movementDetection = new MovementDetection(sensorManager);
+		rotationDetection = new RotationDetection(sensorManager);
 	}
 
 	@Override
@@ -56,7 +59,16 @@ public class PreviewOverlay extends View {
 //		setAngle(processFrame.getAngle());
 //		setAngle(0);
 		
+		setNormalAngle(rotationDetection.getAngle());
+		paint.setARGB(255, 255, 0, 0);
 		canvas.drawLine((float) startDrawPoint.x, (float) startDrawPoint.y, (float) endDrawPoint.x, (float) endDrawPoint.y, paint);
+		
+		setAngle(rotationDetection.getAngle());		
+		paint.setARGB(255, 0, 255, 0);
+		canvas.drawLine((float) startDrawPoint.x, (float) startDrawPoint.y, (float) endDrawPoint.x, (float) endDrawPoint.y, paint);
+		
+		paint.setARGB(255, 0, 0, 255);
+		canvas.drawLine((float) startDrawPoint.x, (float) startDrawPoint.y, 0, (float) height/2, paint);
 		invalidate();
 	}
 
@@ -67,9 +79,24 @@ public class PreviewOverlay extends View {
 		startDrawPoint.y = centerPoint.y * heightRatio;
 	}
 
-	public void setAngle(double angle){
+	
+	public void setNormalAngle(double angle){
 		int length = width;
 		double radians = Math.toRadians(angle);
+		double x = Math.cos(radians) * length;
+		double y = Math.sin(radians) * length;
+		endDrawPoint.x = startDrawPoint.x + y;
+		endDrawPoint.y = startDrawPoint.y - x;
+	}
+	
+	public void setAngle(double angle){
+		int length = width;
+		double k = 110 - angle;
+		if (k < 0){
+			k = 360 + k;
+		}
+		System.out.println("Shit::" + angle + ", " + k);
+		double radians = Math.toRadians(k);
 		double x = Math.cos(radians) * length;
 		double y = Math.sin(radians) * length;
 		endDrawPoint.x = startDrawPoint.x + y;
