@@ -27,7 +27,7 @@ public class ColourRanges {
 	public boolean isBlack(int h, int s, int v){
 		if (h >= 0 && h <= 179){
 			if (s >= 0 && s <= 255){
-				if (v>=0 && v <= 70){
+				if (v>=0 && v <= 80){
 					return true;	
 				}
 			}
@@ -37,7 +37,7 @@ public class ColourRanges {
 
 	public boolean isWhite(int h, int s, int v){
 		if (h >= 0 && h <= 179){
-			if (s >= 0 && s <= 70){
+			if (s >= 0 && s <= 100){
 				if (v>=0 && v <= 255){
 					return true;	
 				}
@@ -58,7 +58,7 @@ public class ColourRanges {
 	}
 
 	public boolean isGreen(int h, int s, int v){
-		if (h >= 45 && h <= 70){
+		if (h >= 40 && h <= 94){
 			if (s >= 80 && s <= 255){
 				if (v>=80 && v <= 255){
 					return true;	
@@ -69,7 +69,7 @@ public class ColourRanges {
 	}
 
 	public boolean isBlue(int h, int s, int v){
-		if (h >= 100 && h <= 125){
+		if (h >= 95 && h <= 130){
 			if (s >= 80 && s <= 255){
 				if (v>=80 && v <= 255){
 					return true;	
@@ -80,7 +80,7 @@ public class ColourRanges {
 	}
 
 	public boolean isAqua(int h, int s, int v){
-		if (h >= 75 && h <= 95){
+		if (h >= 80 && h <= 95){
 			if (s >= 80 && s <= 255){
 				if (v>=80 && v <= 255){
 					return true;	
@@ -91,7 +91,7 @@ public class ColourRanges {
 	}
 
 	public boolean isRed(int h, int s, int v){
-		if ((h >= 0 && h <= 20) || (h >= 170 && h <= 179)){
+		if ((h >= 0 && h <= 25) || (h >= 160 && h <= 179)){
 			if (s >= 80 && s <= 255){
 				if (v>=80 && v <= 255){				
 					return true;	
@@ -116,6 +116,10 @@ public class ColourRanges {
 		return isWhite((int) values[0], (int) values[1], (int) values[2]);
 	}
 
+	public boolean isBlack(double[] values) {
+		return isBlack((int) values[0], (int) values[1], (int) values[2]);
+	}
+	
 	public int getColorValue(double[] values) {
 		return getColorValue((int) values[0], (int) values[1], (int) values[2]);
 	}

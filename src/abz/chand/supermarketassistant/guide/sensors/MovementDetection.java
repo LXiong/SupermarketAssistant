@@ -24,7 +24,7 @@ public class MovementDetection implements SensorEventListener {
 		
 		
 		mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-		sensorManager.registerListener(this, mSensor, 1000);	
+//		sensorManager.registerListener(this, mSensor, 1000);	
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class MovementDetection implements SensorEventListener {
 			double x = linear_acceleration[1];
 			double y = linear_acceleration[2];
 
-			System.out.println("linear: " + z + ", " + x + ", " + y);
+//			System.out.println("linear: " + z + ", " + x + ", " + y);
 		}
 	}
 

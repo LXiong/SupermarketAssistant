@@ -17,8 +17,9 @@ import android.view.WindowManager;
 
 public class SupermarketGuide extends Activity{
 	
-	private GLSurfaceView mGLSurfaceView;
+	private MyGLSurfaceView mGLSurfaceView;
 	private SensorManager sensorManager;    
+	private PreviewOverlay previewOverlay;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +29,11 @@ public class SupermarketGuide extends Activity{
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		mGLSurfaceView =  new MyGLSurfaceView(this, sensorManager);
+		//mGLSurfaceView =  new MyGLSurfaceView(this, sensorManager);
 	}
 
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+
 		@Override
 		public void onManagerConnected(int status) {
 			switch (status) {
@@ -42,17 +44,12 @@ public class SupermarketGuide extends Activity{
 				CameraPreview cameraPreview = new CameraPreview(getApplicationContext(), processFrame);			
 				setContentView(cameraPreview);				
 				
-//				addContentView(mGLSurfaceView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-
-			
-				PreviewOverlay previewOverlay = new PreviewOverlay(getApplicationContext(), processFrame, sensorManager);
+//				addContentView(mGLSurfaceView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));		
+				previewOverlay = new PreviewOverlay(getApplicationContext(), processFrame, sensorManager);
+				previewOverlay.startSensor();
 				addContentView(previewOverlay, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 //				setContentView(R.layout.camerapreview);
-				
-//				previewOverlay = (PreviewOverlay) findViewById(R.id.previewOverlay);
-//				mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//				mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-//				mSensorManager.registerListener(this, mSensor, 1000);				
+							
 			} break;
 			default:
 			{
@@ -66,8 +63,9 @@ public class SupermarketGuide extends Activity{
     protected void onPause() {
         // Ideally a game should implement onResume() and onPause()
         // to take appropriate action when the activity looses focus
-        super.onPause();       
-        mGLSurfaceView.onPause();
+        super.onPause();
+        previewOverlay.stopSensor();
+//        mGLSurfaceView.onPause();
     }
 
 	
@@ -76,50 +74,53 @@ public class SupermarketGuide extends Activity{
 	{
 		super.onResume();
 		OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
-
-        mGLSurfaceView.onResume();
+//		previewOverlay.startSensor();
+//        mGLSurfaceView.onResume();
 		
 	}
 	
 	@Override
 	protected void onDestroy() {	
 		super.onDestroy();
-//		mSensorManager.unregisterListener(this);
+		previewOverlay.stopSensor();
+//		mGLSurfaceView.stopSensor();
 	}
 	
-
-//	public void onSensorChanged(SensorEvent event) {
-//
-//        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-//            SensorManager.getRotationMatrixFromVector(
-//                    mRotationMatrix , event.values);
-//            SensorManager.getOrientation(mRotationMatrix, mOrientation);
-//            double z = Math.round(Math.toDegrees(mOrientation[0]));
-//            previewOverlay.setZ(z);
-//            double x = Math.round(Math.toDegrees(mOrientation[1]));
-//            double y = Math.round(Math.toDegrees(mOrientation[2]));
-//            System.out.println("Kasru: " + x + ", " + y + ", " + z);
-//            //System.out.println("Kasru: " + mRotationMatrix[0] + ", " +  mRotationMatrix[1] + ", " +  mRotationMatrix[2] + ", " +  mRotationMatrix[3] + ", " +  mRotationMatrix[4] + ", " +  mRotationMatrix[5] + "," + event.values.length );
-//        }
-//		
-//	}
-
-
 }
 
 
 class MyGLSurfaceView extends GLSurfaceView {
 
-    public MyGLSurfaceView(Context context, SensorManager sensorManager) {
+    private MyGLRenderer myGLRenderer;
+
+	public MyGLSurfaceView(Context context, SensorManager sensorManager) {
         super(context);
 
         setEGLContextClientVersion(2);
 
         setZOrderMediaOverlay(true);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-        setRenderer(new MyGLRenderer(sensorManager));
+        myGLRenderer = new MyGLRenderer(sensorManager);
+        myGLRenderer.startSensor();
+        setRenderer(myGLRenderer);
+                
         getHolder().setFormat(PixelFormat.TRANSLUCENT);
-
-        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+//        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+        myGLRenderer.startSensor();
+    }
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+    	myGLRenderer.stopSensor();
+	}
+    
+    public void stopSensor(){
+    	myGLRenderer.stopSensor();
     }
 }

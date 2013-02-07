@@ -128,21 +128,19 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	
 	@Override
 	public void onPreviewFrame(byte[] data, Camera camera) {
-//		processFrame.getStickerDataString(data);
-//		System.out.println("POPOPOPOP");
-//		if (what){
-//			CameraFrameData.data = data;
-//		}
-//		mCamera.addCallbackBuffer(data);
+		CameraFrameData.data = data;
+				
+//		processFrame.getMarkerData(CameraFrameData.data);
+		processFrame.updateFreeSpaceDirection(CameraFrameData.data);
+		mCamera.addCallbackBuffer(CameraFrameData.data);
 	}
 
 	AutoFocusCallback myAutoFocusCallback = new AutoFocusCallback(){
 
 		@Override
 		public void onAutoFocus(boolean arg0, Camera arg1) {
-//			what = false;
-			mCamera.takePicture(shutter, rawPic, jpeg);
-			//	mCamera.autoFocus(myAutoFocusCallback);
+//			mCamera.takePicture(shutter, rawPic, jpeg);
+			mCamera.autoFocus(myAutoFocusCallback);
 		}
 
 	};
@@ -175,6 +173,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public void pictureTakenPreview(){
 		Context context = getContext();
 		Intent intent = new Intent(context, PictureTakenPreview.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(intent);
 	}
 	

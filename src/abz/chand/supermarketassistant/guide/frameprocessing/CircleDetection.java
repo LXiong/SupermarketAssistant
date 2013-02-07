@@ -12,27 +12,22 @@ public class CircleDetection {
 	
 	private Mat circles; 
 	private Mat copyMat; 
-	private List<Point> centerPoints;
-	
-	
+		
 	public CircleDetection(){
 		circles = new Mat();
 		copyMat = new Mat();
-		centerPoints = new ArrayList<Point>();
 	}
 
-	public List<Point> getCirclePoints(Mat mat){
-		centerPoints.clear();
-		
+	public Point getCirclePoints(Mat mat){		
 //		Imgproc.cvtColor(mat, copyMat, Imgproc.COLOR_YUV2GRAY_NV21);
 //		Imgproc.cvtColor(mat, copyMat, Imgproc.COLOR_RGBA2GRAY);
 //		Imgproc.cvtColor(mat, copyMat, Imgproc.COLOR_BGR2GRAY);
-		Imgproc.cvtColor(mat, copyMat, Imgproc.COLOR_RGB2GRAY);
+//		Imgproc.cvtColor(mat, copyMat, Imgproc.COLOR_RGB2GRAY);
 		
 		
-		Imgproc.GaussianBlur(copyMat, copyMat, new Size(9, 9), 0, 0);
-		Imgproc.Canny(copyMat, copyMat, 10, 100);
-		Imgproc.HoughCircles(copyMat, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 50, 100, 10, 10, 320);
+//		Imgproc.GaussianBlur(copyMat, copyMat, new Size(9, 9), 0, 0);
+//		Imgproc.Canny(copyMat, copyMat, 10, 100);
+		Imgproc.HoughCircles(mat, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 50, 100, 10, 10, 320);
 	
 //		Imgproc.HoughCircles(copyMat, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 10, 100, 10, 10, 1000);
 		
@@ -41,10 +36,9 @@ public class CircleDetection {
 			if (circleAttributes == null){
 				continue;
 			}
-			centerPoints.add(new Point(circleAttributes[0], circleAttributes[1]));	
+			return new Point(circleAttributes[0], circleAttributes[1]);	
 		}
-		
-		return centerPoints;
+		return null;
 	}
 	
 }

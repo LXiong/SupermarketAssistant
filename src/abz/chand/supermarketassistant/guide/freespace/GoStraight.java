@@ -1,0 +1,79 @@
+package abz.chand.supermarketassistant.guide.freespace;
+
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+
+import android.util.Pair;
+import android.view.VelocityTracker;
+
+public class GoStraight implements Go {
+
+	private final static int MAX_LINES = 20;
+
+	private int width;
+	private int height;
+	private Pair<Point, Point> directionLine;
+
+	public GoStraight(int width, int height) {
+		this.width = width;
+		this.height = height;
+		directionLine = new Pair<Point, Point>(new Point(), new Point());
+	}
+
+	@Override
+	public Pair<Point, Point> getDirection(Mat lines, Point start, Mat rgbMat) {
+		double x = start.x;
+		double y = start.y;
+
+		Scalar color = new Scalar(0,0,255);
+
+		double startY = height/MAX_LINES;
+
+		int count = 0;
+
+		for (double j = startY; j < height-1; j += startY){
+			boolean intersects = false;
+
+			for (int i = 0; i < lines.cols(); i++){			
+				double[] points = lines.get(0, i); 
+				double x1 = points[0];
+				double y1 = points[1];
+				double x2 = points[2];
+				double y2 = points[3];
+
+				double minX = Math.min(x1, x2);
+
+
+				if (minX > x){
+					continue;
+				}			
+
+				intersects = LineSegmentIntersection.linesIntersect(x1, y1, x2, y2, x, j, 0, j);
+				if (intersects){
+					break;
+				}
+			}
+
+			if (!intersects){
+				count++;
+			} else {
+				count = 0;
+				continue;
+			}
+			
+
+			if (count >= 4){	
+				Core.line(rgbMat, new Point(x, j), new Point(0, j), color, 2);
+				directionLine.first.x = x;
+				directionLine.first.y = j;
+				directionLine.second.x = 0;
+				directionLine.second.y = j;
+				return directionLine;
+			}
+		}
+
+		return null;	
+	}
+}

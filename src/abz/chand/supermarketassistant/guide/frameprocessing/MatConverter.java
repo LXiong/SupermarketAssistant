@@ -32,6 +32,12 @@ public class MatConverter {
 		return mat;
 	}
 	
+	public Mat convertRgbToGray(Mat rgbYuv){
+		Mat mat = new Mat();
+		Imgproc.cvtColor(rgbYuv, mat, Imgproc.COLOR_RGB2GRAY);
+		return mat;
+	}
+	
 	public Mat convertYuvToRgba(Mat matYuv){
 		Mat mat = new Mat();
 		Imgproc.cvtColor(matYuv, mat, Imgproc.COLOR_YUV2RGBA_NV21);

@@ -6,11 +6,12 @@ import java.util.List;
 import org.opencv.core.Point;
 
 public class StickerData {
-	
+
+	private static final int DATA_CHECKING_MOD = 8;
 	private Point centerPoint;
-	private int angleFromNorth;
+	private double angleFromNorth;
 	private List<Integer> dataValues;
-	
+
 	public StickerData() {
 		setCenterPoint(new Point(0, 0));
 		setAngleFromNorth(0);
@@ -25,11 +26,11 @@ public class StickerData {
 		return centerPoint;
 	}
 
-	public void setAngleFromNorth(int angleFromNorth) {
+	public void setAngleFromNorth(double angleFromNorth) {
 		this.angleFromNorth = angleFromNorth;
 	}
 
-	public int getAngleFromNorth() {
+	public double getAngleFromNorth() {
 		return angleFromNorth;
 	}
 
@@ -52,14 +53,49 @@ public class StickerData {
 		}
 		return str;
 	}
-	
+
+	public boolean validDataValues(){
+		for (int i = 0; i < dataValues.size(); i++){
+			if (dataValues.get(i) > 2){
+				return false;
+			}
+		}		
+		return true;
+	}
+
+	public int getActualValue(){
+		int m = 1;
+		int value = 0;
+		for (int i = 0; i < dataValues.size() - 2; i++){
+			value += (m * dataValues.get(i));
+			m *= 3;
+		}	
+
+		boolean correct = validateValue(value);
+
+		if (correct){
+			return value;
+		} else {
+			return -1;
+		}
+	}
+
+	private boolean validateValue(int value) {
+		int validateValue = 0;
+		int size = dataValues.size(); 
+		if (size >= 2){
+			validateValue = dataValues.get(size-2) + (3 * dataValues.get(size-1));
+		}
+		return (value + validateValue) % DATA_CHECKING_MOD == 0;
+	}
+
 	public boolean equalDataValues(final StickerData stickerData) {		
-		
+
 		List<Integer> otherDataValues = stickerData.getDataValues();
 		if (dataValues.size() != otherDataValues.size()){
 			return false;
 		}
-		
+
 		for (int i = 0; i < dataValues.size(); i++){
 			if (dataValues.get(i) != otherDataValues.get(i)){
 				return false;
@@ -67,5 +103,5 @@ public class StickerData {
 		}
 		return true;
 	}
-	
+
 }
